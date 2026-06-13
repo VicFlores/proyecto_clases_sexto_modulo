@@ -55,6 +55,19 @@ app.get('/alumnos', (req, res) => {
 
 // Registrar un nuevo alumno
 app.post('/alumnos', (req, res) => {
+  if (
+    req.body === undefined ||
+    req.body.nombre === undefined ||
+    req.body.apellido === undefined ||
+    req.body.grado === undefined ||
+    req.body.seccion === undefined
+  ) {
+    return res.status(400).json({
+      error:
+        'Todos los campos son requeridos: nombre, apellido, grado, seccion',
+    });
+  }
+
   const { nombre, apellido, grado, seccion } = req.body;
 
   const nuevoAlumno = {
@@ -64,4 +77,94 @@ app.post('/alumnos', (req, res) => {
     grado,
     seccion,
   };
+
+  alumnos.push(nuevoAlumno);
+
+  res.status(201).json({
+    message: 'Alumno registrado existosamente',
+    alumno: nuevoAlumno,
+  });
+});
+
+// PATCH /alumnos/:id
+// Actualiza solo los campos enviados en el body, los demas se mantienen igual
+app.patch('/alumnos/:id', (req, res) => {
+  if (req.body === undefined) {
+    return res.status(400).json({
+      error: 'El body no puede estar vacio',
+    });
+  }
+
+  const alumno = alumnos.find((a) => a.id === Number(req.params.id));
+
+  if (!alumno) {
+    return res.status(404).json({
+      error: 'Alumno no encontrado',
+    });
+  }
+
+  const { nombre, apellido, grado, seccion } = req.body;
+
+  if (nombre) alumno.nombre = nombre;
+  if (apellido) alumno.apellido = apellido;
+  if (grado) alumno.grado = grado;
+  if (seccion) alumno.seccion = seccion;
+
+  res.json({
+    message: 'Alumno actualizado exitosamente',
+    alumno,
+  });
+});
+
+// PUT /alumnos/:id
+// Reemplaza todos los datos de un alumno, requiere todos los campos
+app.put('/alumnos/:id', (req, res) => {
+  if (req.body === undefined) {
+    return res.status(400).json({
+      error: 'El body no puede estar vacio',
+    });
+  }
+
+  const alumno = alumnos.find((a) => a.id === Number(req.params.id));
+
+  if (!alumno) {
+    return res.status(404).json({
+      error: 'Alumno no encontrado',
+    });
+  }
+
+  const { nombre, apellido, grado, seccion } = req.body;
+
+  alumno.nombre = nombre;
+  alumno.apellido = apellido;
+  alumno.grado = grado;
+  alumno.seccion = seccion;
+
+  res.json({
+    message: 'Alumno actualizado exitosamente',
+    alumno,
+  });
+});
+
+// DELETE /alumnos/:id
+// Elimina un alumno por su id
+app.delete('/alumnos/:id', (req, res) => {
+  const alumnoIndex = alumnos.findIndex((a) => a.id === Number(req.params.id));
+
+  if (alumnoIndex === -1) {
+    return res.status(404).json({
+      message: 'Alumno no encontrado',
+    });
+  }
+
+  alumnos.splice(alumnoIndex, 1);
+
+  res.status(204).send();
+});
+
+// Captura cualquier solicitud que no coincida con las rutas definidas
+app.use((req, res) => {
+  res.status(404).json({
+    error: 'Ruta no encontrada',
+  });
 });
