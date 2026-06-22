@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import alumnosRoutes from './src/routes/alumno.routes.js';
+import { errorHandler } from './src/middlewares/errorHandler.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -17,6 +18,9 @@ app.use((req, res) => {
   });
 });
 
+// Middleware de manejo de errores
+app.use(errorHandler);
+
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto: ${PORT}`);
+  console.log(`Servidor corriendo en: http://localhost:${PORT}`);
 });
