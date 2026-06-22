@@ -2,13 +2,13 @@ import { AppError } from '../errors/appError.js';
 import * as AlumnoRepository from '../repositories/alumno.repository.js';
 
 // getAll - Devuelve todos los alumnos, con opción de filtrar por grado
-export const getAll = ({ grado } = {}) => {
-  return AlumnoRepository.findAll({ grado });
+export const getAll = async ({ grado } = {}) => {
+  return await AlumnoRepository.findAll({ grado });
 };
 
 // getById - Devuelve un alumno por su ID
-export const getById = (id) => {
-  const alumno = AlumnoRepository.findById(id);
+export const getById = async (id) => {
+  const alumno = await AlumnoRepository.findById(id);
 
   if (!alumno) throw new AppError('Alumno no encontrado', 404);
 
@@ -16,7 +16,7 @@ export const getById = (id) => {
 };
 
 // create - Agrega un nuevo alumno a la base de datos
-export const create = ({ nombre, apellido, grado, seccion }) => {
+export const create = async ({ nombre, apellido, grado, seccion }) => {
   if (!nombre || !apellido || !grado || !seccion) {
     throw new AppError(
       'Todos los campos son requeridos: nombre, apellido, grado y seccion',
@@ -24,7 +24,10 @@ export const create = ({ nombre, apellido, grado, seccion }) => {
     );
   }
 
-  const existente = AlumnoRepository.findByNombreCompleto(nombre, apellido);
+  const existente = await AlumnoRepository.findByNombreCompleto(
+    nombre,
+    apellido,
+  );
 
   if (existente) {
     throw new AppError(
@@ -33,11 +36,11 @@ export const create = ({ nombre, apellido, grado, seccion }) => {
     );
   }
 
-  return AlumnoRepository.save({ nombre, apellido, grado, seccion });
+  return await AlumnoRepository.save({ nombre, apellido, grado, seccion });
 };
 
-export const update = (id, campos) => {
-  const existe = AlumnoRepository.findById(id);
+export const update = async (id, campos) => {
+  const existe = await AlumnoRepository.findById(id);
 
   if (!existe) {
     throw new AppError('Alumno no encontrado', 404);
@@ -60,15 +63,15 @@ export const update = (id, campos) => {
     );
   }
 
-  return AlumnoRepository.updateById(id, campos);
+  return await AlumnoRepository.updateById(id, campos);
 };
 
-export const remove = (id) => {
-  const existe = AlumnoRepository.findById(id);
+export const remove = async (id) => {
+  const existe = await AlumnoRepository.findById(id);
 
   if (!existe) {
     throw new AppError('Alumno no encontrado', 404);
   }
 
-  AlumnoRepository.deleteById(id);
+  await AlumnoRepository.deleteById(id);
 };
