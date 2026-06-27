@@ -24,3 +24,9 @@ export const cambiarPassword = async (req, res) => {
   });
   res.status(204).send();
 };
+
+export const perfil = async (req, res) => {
+  const usuario = await AuthService.obtenerPerfil(req.usuario.id);
+
+  res.json(usuario);
+};

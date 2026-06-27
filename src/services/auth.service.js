@@ -1,5 +1,6 @@
 import { AppError } from '../errors/appError.js';
 import { hashPassword, comparePassword } from '../utils/password.js';
+import { generarToken } from '../utils/token.js';
 import * as UsuarioRepository from '../repositories/usuario.repository.js';
 
 export const registrar = async ({ nombre, email, password }) => {
@@ -32,13 +33,7 @@ export const registrar = async ({ nombre, email, password }) => {
 };
 
 export const iniciarSesion = async ({ email, password }) => {
-  if (!email || !password) {
-    throw new AppError('Email y contraseña son requeridos', 400);
-  }
-
   const usuario = await UsuarioRepository.findByEmail(email);
-
-  console.log(usuario);
 
   if (!usuario) {
     throw new AppError('Email o contraseña incorrectos', 401);
@@ -50,7 +45,16 @@ export const iniciarSesion = async ({ email, password }) => {
     throw new AppError('Email o contraseña incorrectos', 401);
   }
 
-  return { id: usuario.id, nombre: usuario.nombre, email: usuario.email };
+  const token = generarToken({
+    id: usuario.id,
+    nombre: usuario.nombre,
+    email: usuario.email,
+  });
+
+  return {
+    usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email },
+    token,
+  };
 };
 
 export const cambiarPassword = async (
@@ -84,4 +88,14 @@ export const cambiarPassword = async (
 
   const nuevoHash = await hashPassword(passwordNueva);
   await UsuarioRepository.updatePasswordHash(id, nuevoHash);
+};
+
+export const obtenerPerfil = async (id) => {
+  const usuario = await UsuarioRepository.findById(id);
+
+  if (!usuario) {
+    throw new AppError('Usuario no encontrado', 404);
+  }
+
+  return { id: usuario.id, nombre: usuario.nombre, email: usuario.email };
 };
