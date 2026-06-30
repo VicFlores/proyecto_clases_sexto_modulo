@@ -30,3 +30,8 @@ export const perfil = async (req, res) => {
 
   res.json(usuario);
 };
+
+export const listarUsuarios = async (req, res) => {
+  const usuarios = await AuthService.listarUsuarios();
+  res.json(usuarios);
+};

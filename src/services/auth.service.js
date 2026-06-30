@@ -49,6 +49,7 @@ export const iniciarSesion = async ({ email, password }) => {
     id: usuario.id,
     nombre: usuario.nombre,
     email: usuario.email,
+    rol: usuario.rol,
   });
 
   return {
@@ -97,5 +98,14 @@ export const obtenerPerfil = async (id) => {
     throw new AppError('Usuario no encontrado', 404);
   }
 
-  return { id: usuario.id, nombre: usuario.nombre, email: usuario.email };
+  return {
+    id: usuario.id,
+    nombre: usuario.nombre,
+    email: usuario.email,
+    rol: usuario.rol,
+  };
+};
+
+export const listarUsuarios = async () => {
+  return await UsuarioRepository.findAll();
 };
